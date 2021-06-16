@@ -4,7 +4,7 @@
 
 package com.grapefruit.utils.string;
 
-import java.util.*;
+import java.util.UUID;
 
 /**
  * 相关描述

@@ -4,19 +4,22 @@
 
 package com.grapefruit.utils.security;
 
-import com.auth0.jwt.*;
-import com.auth0.jwt.algorithms.*;
-import com.auth0.jwt.interfaces.*;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 
-import java.io.*;
-import java.security.*;
-import java.security.interfaces.*;
-import java.security.spec.*;
-import java.util.*;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
- *
  * token工具类(生成token和校验token)
  *
  * @author 柚子苦瓜茶
@@ -46,12 +49,12 @@ public class TokenUtils {
     /**
      * 生成token(HMAC256)
      *
-     * @param userName 用户名
-     * @param password 密码
+     * @param userName   用户名
+     * @param password   密码
      * @param expireTime token过期时间
      * @return token字符串
      */
-    public static String generateTokenWithHMAC256(String userName,String password,Long expireTime) {
+    public static String generateTokenWithHMAC256(String userName, String password, Long expireTime) {
         //设置过期时间
         Date date = new Date(System.currentTimeMillis() + expireTime);
 
@@ -77,12 +80,12 @@ public class TokenUtils {
     /**
      * 生成token(HMAC256)
      *
-     * @param userName 用户名
-     * @param password 密码
+     * @param userName   用户名
+     * @param password   密码
      * @param expireTime token过期时间
      * @return token字符串
      */
-    public static String generateTokenWithRSA512(String userName,String password,Long expireTime) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
+    public static String generateTokenWithRSA512(String userName, String password, Long expireTime) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
         //设置过期时间
         Date date = new Date(System.currentTimeMillis() + expireTime);
 
@@ -90,7 +93,7 @@ public class TokenUtils {
         Map<String, Object> keyMap = RSAUtils.getKey();
 
         //设置算法
-        Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) keyMap.get("publicKey"),(RSAPrivateKey) keyMap.get("privateKey"));
+        Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) keyMap.get("publicKey"), (RSAPrivateKey) keyMap.get("privateKey"));
 
         //设置参数
         Map<String, Object> header = new HashMap<>(2);
@@ -112,7 +115,7 @@ public class TokenUtils {
      * 校验token(HMAC256)
      *
      * @param token
-     * @return 返回token的校验结果(true token有效,false token 无效)
+     * @return 返回token的校验结果(true token有效, false token 无效)
      */
     public static boolean checkTokenWithHMAC256(String token) {
         try {
@@ -130,14 +133,14 @@ public class TokenUtils {
      * 校验token(RSA512)
      *
      * @param token
-     * @return 返回token的校验结果(true token有效,false token 无效)
+     * @return 返回token的校验结果(true token有效, false token 无效)
      */
     public static boolean checkTokenWithRSA512(String token) {
         try {
             Map<String, Object> keyMap = RSAUtils.getKey();
 
             //获取存有公钥对象、密钥对象的map集合
-            Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) keyMap.get("publicKey"),(RSAPrivateKey) keyMap.get("privateKey"));
+            Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) keyMap.get("publicKey"), (RSAPrivateKey) keyMap.get("privateKey"));
 
             JWTVerifier verifier = JWT.require(algorithm).build();
             verifier.verify(token);
@@ -150,6 +153,7 @@ public class TokenUtils {
 
     /**
      * 解析token的原有信息
+     *
      * @param token
      * @return 原有信息
      */

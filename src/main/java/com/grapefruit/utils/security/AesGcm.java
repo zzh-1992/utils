@@ -9,7 +9,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.bouncycastle.util.encoders.Hex;
 
-import javax.crypto.*;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
@@ -40,7 +44,7 @@ public class AesGcm {
 
         aesgcm();
 
-        Req req = new Req("grapefruit1999","001",2021);
+        Req req = new Req("grapefruit1999", "001", 2021);
         String jsonString = JSON.toJSONString(req);
 
         // 加密明文获得
@@ -58,7 +62,7 @@ public class AesGcm {
     }
 
     // 获取密钥
-    public static Map<String,byte[]> getSecret(){
+    public static Map<String, byte[]> getSecret() {
         // 使用强随机数
         SecureRandom secureRandom = new SecureRandom();
         byte[] key = new byte[16];
@@ -67,24 +71,25 @@ public class AesGcm {
         byte[] iv = new byte[12]; // 使用同一密钥时初始向量绝不能重用
         secureRandom.nextBytes(iv);
 
-        Map<String,byte[]> map = new HashMap<>();
-        map.put(KEY,key);
-        map.put(IV,iv);
+        Map<String, byte[]> map = new HashMap<>();
+        map.put(KEY, key);
+        map.put(IV, iv);
         return map;
     }
 
 
     /**
      * 加密操作
+     *
      * @param plainText 明文
-     * @param map 密钥参数
+     * @param map       密钥参数
      * @return 秘文byte
-     * @throws NoSuchPaddingException NoSuchPaddingException
-     * @throws NoSuchAlgorithmException NoSuchAlgorithmException
+     * @throws NoSuchPaddingException             NoSuchPaddingException
+     * @throws NoSuchAlgorithmException           NoSuchAlgorithmException
      * @throws InvalidAlgorithmParameterException InvalidAlgorithmParameterException
-     * @throws InvalidKeyException InvalidKeyException
-     * @throws IllegalBlockSizeException IllegalBlockSizeException
-     * @throws BadPaddingException BadPaddingException
+     * @throws InvalidKeyException                InvalidKeyException
+     * @throws IllegalBlockSizeException          IllegalBlockSizeException
+     * @throws BadPaddingException                BadPaddingException
      */
     public static byte[] encrypt(String plainText, Map<String, byte[]> map) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         // 对输入数据进行编码，生成十六进制编码的字节数组。
@@ -101,15 +106,16 @@ public class AesGcm {
 
     /**
      * 解密操作
+     *
      * @param cipherBytes 密钥byte[]
-     * @param map 密钥参数
+     * @param map         密钥参数
      * @return 明文
-     * @throws NoSuchPaddingException NoSuchPaddingException
-     * @throws NoSuchAlgorithmException NoSuchAlgorithmException
+     * @throws NoSuchPaddingException             NoSuchPaddingException
+     * @throws NoSuchAlgorithmException           NoSuchAlgorithmException
      * @throws InvalidAlgorithmParameterException InvalidAlgorithmParameterException
-     * @throws InvalidKeyException InvalidKeyException
-     * @throws IllegalBlockSizeException IllegalBlockSizeException
-     * @throws BadPaddingException BadPaddingException
+     * @throws InvalidKeyException                InvalidKeyException
+     * @throws IllegalBlockSizeException          IllegalBlockSizeException
+     * @throws BadPaddingException                BadPaddingException
      */
     public static String decrypt(byte[] cipherBytes, Map<String, byte[]> map) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Cipher cipher = Cipher.getInstance(AES_GCM_NO_PADDING);
@@ -132,7 +138,7 @@ public class AesGcm {
         GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv); // 256 位长的认证标签
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, parameterSpec);
 
-        Req req = new Req("grapefruit","001",2021);
+        Req req = new Req("grapefruit", "001", 2021);
         String jsonString = JSON.toJSONString(req);
         // 明文字符串转明文byte
         byte[] jsonStringBytes = jsonString.getBytes();
@@ -164,7 +170,7 @@ public class AesGcm {
 
     @Data
     @AllArgsConstructor
-    public static class Req{
+    public static class Req {
         String name;
         String id;
         int age;

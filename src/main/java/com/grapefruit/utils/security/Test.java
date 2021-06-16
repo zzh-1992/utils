@@ -4,9 +4,9 @@
 
 package com.grapefruit.utils.security;
 
-import java.io.*;
-import java.security.*;
-import java.security.spec.*;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 /**
  * @author 柚子苦瓜茶
@@ -21,8 +21,9 @@ public class Test {
 
         checkWithHRSA512();
     }
+
     public static void checkWithHMAC256() throws InterruptedException {
-        String token = TokenUtils.generateTokenWithHMAC256("ZZH","6789",1000L);
+        String token = TokenUtils.generateTokenWithHMAC256("ZZH", "6789", 1000L);
         Thread.sleep(1001L);
 
         //校验token的时候让当前线程休眠
@@ -31,7 +32,7 @@ public class Test {
         long l2 = System.currentTimeMillis();
 
         System.out.println("解密时间:" + (l2 - l1) + "毫秒");
-        System.out.println(isOk?"token有效":"token过期=====");
+        System.out.println(isOk ? "token有效" : "token过期=====");
         TokenUtils.getContentFromToken(token);
     }
 
@@ -45,7 +46,7 @@ public class Test {
         long l2 = System.currentTimeMillis();
 
         System.out.println("解密时间:" + (l2 - l1) + "毫秒");
-        System.out.println(isOk?"token有效":"token过期=====");
+        System.out.println(isOk ? "token有效" : "token过期=====");
         TokenUtils.getContentFromToken(token);
     }
 }
